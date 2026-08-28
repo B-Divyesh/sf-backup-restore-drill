@@ -1,0 +1,11 @@
+{
+  "slug": "backup-restore-drill",
+  "title": "Restore Drill",
+  "territory": "utilities",
+  "user": "Individuals and small teams with scripted backups who need a low-friction, repeatable proof that their backup can restore the files they care about.",
+  "smallest_useful_product": "A local CLI that runs configured safe sample restores into a temporary directory, verifies hashes and selected application-open checks, records an immutable receipt, and alerts only on a failed or overdue drill.",
+  "success_measure": "Pilot users complete a successful restore drill every 30 days; all injected corrupt/missing fixture cases fail loudly with a remediation hint.",
+  "artifact_class": "cli",
+  "monetization": "free",
+  "constraints": "Restore only into an explicitly created temporary target; use least-privilege repository credentials; never log file contents or passphrases; clean temporary output safely after verification."
+}
