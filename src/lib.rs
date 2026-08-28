@@ -671,9 +671,9 @@ mod tests {
         let mut receipt: serde_json::Value =
             serde_json::from_slice(&fs::read(&outcome.receipt_path).unwrap()).unwrap();
         receipt["status"] = serde_json::Value::String("pass".into());
-        let mut perms = fs::metadata(&outcome.receipt_path).unwrap().permissions();
-        perms.set_readonly(false);
-        fs::set_permissions(&outcome.receipt_path, perms).unwrap();
+        // A read-only file can still be replaced when its containing directory is writable.
+        // This models the documented host-level tampering threat without relaxing file mode.
+        fs::remove_file(&outcome.receipt_path).unwrap();
         fs::write(&outcome.receipt_path, serde_json::to_vec(&receipt).unwrap()).unwrap();
         assert!(load_receipts(&cfg.receipt_dir).is_err());
     }

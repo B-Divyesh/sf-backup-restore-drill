@@ -85,6 +85,14 @@ cargo package --allow-dirty
 
 `npm run build` creates release binaries in `dist/bin/` and the deployable documentation site in `dist/site/`. The static site can be developed with `npm run dev`.
 
+The deployable site includes `staticwebapp.config.json`, which is the Azure Static Web Apps response-policy contract: it sends the restrictive CSP, permissions and referrer policies, caches only hashed assets and the immutable hero for a year, and keeps `sw.js` revalidating. Verify that contract after a production deployment with:
+
+```sh
+npm run test:response-policy
+curl -sSI https://backup-restore-drill.sociobot.in/
+curl -sSI https://backup-restore-drill.sociobot.in/sw.js
+```
+
 ## Privacy and security
 
 Everything runs locally. There is no telemetry, account, cloud API, or credential storage. Restore subprocess output is deliberately not copied into receipts because tools sometimes echo repository locations or sensitive arguments. Prefer a read-only repository credential scoped outside this config file.
