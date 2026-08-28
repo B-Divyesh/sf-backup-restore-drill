@@ -1,4 +1,38 @@
-# Restore Drill v0.1.0 — repair handoff: PASS
+# Restore Drill — independent QA handoff: PASS
+
+**Verified candidate:** `e4b72c237bf0683c472c07e4e699bb062acd023d`
+**Live deployment:** <https://backup-restore-drill.sociobot.in/>
+**Verified:** 2026-08-28 UTC
+**Release status:** **PASS**
+
+Fresh independent QA passed the clean install, complete test suite, exact production build, strict Rust formatting/lint/package gates, clean consumer installation, and black-box CLI recovery drills. The live deployment byte-matches the built home page and service worker and now serves the required CSP, permissions, referrer, nosniff, cache, and service-worker policies.
+
+The CLI independently passed normal recovery/current status plus corrupt hash, missing file, failing application check, timeout, invalid-config, unsafe-path, and cadence-boundary cases. It cleaned all temporary restore targets, produced read-only receipts, and did not emit deliberately injected private file bytes. The packaged crate installed cleanly and the installed `restore-drill` binary exposed its documented help, version, `init`, and validation behavior.
+
+Live checks passed on desktop and 390px mobile: keyboard-only demo operation, 3px visible focus, reduced motion, zero serious/critical Axe findings, no console/page errors, no automatic cross-origin requests, PWA update/offline reload, and a mobile Lighthouse score of Performance 100 / Accessibility 100 (FCP 0.9 s, LCP 1.4 s, CLS 0, TBT 90 ms). Built JS/CSS/hero sizes are 4.17 KB/13.26 KB/90.0 KB raw, comfortably within budget.
+
+**Defects:** None. The earlier production response-policy/cache failure is resolved.
+
+## How to verify
+
+```sh
+npm ci
+npm test
+npm run build
+cargo fmt --check
+cargo clippy --all-targets -- -D warnings
+cargo package --allow-dirty
+```
+
+Do not publish from this repository worker. The crate is ready for the factory publishing flow; use `cargo package --allow-dirty` to recreate the package. Full evidence is in `.factory/verification-2.md`.
+
+## Known gap
+
+Receipts are intentionally tamper-evident and read-only, not host-immutable. Operators requiring host-level immutability should follow the documented recommendation to copy receipts to append-only external storage.
+
+---
+
+# Prior repair handoff (superseded by independent QA above)
 
 **Repair commit:** `251dec4` (`fix: enforce static response policy`)
 **Repaired deployment:** <https://backup-restore-drill.sociobot.in/>
