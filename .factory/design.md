@@ -17,6 +17,7 @@ The treatment is intentionally single-mode. Warm paper is the workspace and near
 | cobalt | `#1659A8` | archive/action ink |
 | cobalt-dark | `#0B3D79` | link and hover ink |
 | persimmon | `#D94B2B` | overdue/failure stamp; paired with text/icons |
+| brick | `#A32F18` | accessible persimmon-family text and solid warning fields |
 | moss | `#256A45` | verified state; paired with “PASS” |
 | ochre | `#A46100` | warning state and focus underlay |
 
@@ -48,7 +49,7 @@ One 240ms “paper settle” entrance (opacity + translate only) and 160ms press
 
 ## Asset plan and provenance
 
-- `site/public/restore-path.webp`: original generated hero illustration, a text-free two-ink risograph collage showing an archive box, temporary work tray, checked file slips, and an evidence receipt linked by a cobalt path. Generated on 2026-08-28 with the factory image deployment via `/opt/fleet/lib/gen-image.sh`; prompt is preserved beside the source metadata. Optimized locally to WebP under 300 KB. License: project-owned generated asset under the repository MIT license.
+- `site/public/restore-path.webp`: original generated hero illustration, a text-free two-ink risograph collage showing an archive box, temporary work tray, checked file slips, and an evidence receipt linked by a cobalt path. Generated on 2026-08-28 with the factory image deployment via `/opt/fleet/lib/gen-image.sh`; prompt and model metadata are preserved in `.factory/restore-path.prompt.json`. Optimized locally to WebP under 300 KB. License: project-owned generated asset under the repository MIT license.
 - Registration crosses, dot fields, receipt perforations, and stamps are CSS-built product marks, not stock assets.
 
 No logos, stock icons, third-party imagery, CDN assets, generic gradients, or decorative dashboard charts are used.

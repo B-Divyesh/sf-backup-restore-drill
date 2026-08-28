@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://backup-restore-drill.sociobot.in/sitemap.xml

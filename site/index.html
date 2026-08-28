@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#F3EBD8">
+    <meta name="description" content="Restore Drill is a free local CLI that proves selected files can restore from the backups you already run.">
+    <title>Restore Drill — proof your backup can restore</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="offline" id="offline" role="status" hidden>
+      Offline copy. The guide still works; downloads and external links may not. Reconnect, then reload to update.
+    </div>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Restore Drill home"><span aria-hidden="true">RD//</span> Restore Drill</a>
+      <nav aria-label="Primary navigation">
+        <a href="#method">Method</a>
+        <a href="#configure">Configure</a>
+        <a href="#demo">Try the flow</a>
+        <a class="nav-code" href="https://github.com/B-Divyesh/sf-backup-restore-drill">Source</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy settle">
+          <p class="eyebrow"><span>Local</span><span>Tool-agnostic</span><span>Zero telemetry</span></p>
+          <h1 id="hero-title">Backup exists.<br><em>Recovery proven.</em></h1>
+          <p class="lede">A five-minute restore drill for the files you cannot afford to discover are missing. Use the backup tool you already trust; get one quiet, tamper-evident receipt.</p>
+          <div class="actions">
+            <a class="button primary" href="#configure">Configure a drill <span aria-hidden="true">↓</span></a>
+            <a class="button text-button" href="#demo">See a safe simulation</a>
+          </div>
+          <p class="microcopy">Free · MIT licensed · No account · Runs on your machine</p>
+        </div>
+        <figure class="hero-art settle">
+          <div class="art-frame">
+            <img src="/restore-path.webp" width="1200" height="800" alt="Risograph collage: one file moves from an archive box into a temporary tray, is checked, and becomes a receipt." fetchpriority="high">
+            <span class="reg reg-one" aria-hidden="true">+</span>
+            <span class="reg reg-two" aria-hidden="true">+</span>
+          </div>
+          <figcaption><span>Plate 01</span> Restore a sample. Check the bytes. Keep the evidence.</figcaption>
+        </figure>
+      </section>
+
+      <section class="proof-strip" aria-label="Product safeguards">
+        <p><strong>Nothing to migrate.</strong> Works around restic, Borg, rsync, tar, or your own restore script.</p>
+        <p><strong>Nothing left behind.</strong> Every drill uses and removes a fresh temporary target.</p>
+      </section>
+
+      <section class="section method" id="method" aria-labelledby="method-title">
+        <div class="section-intro">
+          <p class="kicker">The method / 01–04</p>
+          <h2 id="method-title">Small enough to run. Strict enough to trust.</h2>
+          <p>A full disaster simulation is easy to postpone. Restore Drill samples the recovery path you actually need, on a cadence you can sustain.</p>
+        </div>
+        <ol class="steps">
+          <li>
+            <span class="step-number">01</span>
+            <h3>Create a clean target</h3>
+            <p>The CLI—not your restore command—creates a random temporary directory.</p>
+          </li>
+          <li>
+            <span class="step-number">02</span>
+            <h3>Restore chosen samples</h3>
+            <p>Your existing tool restores only configured paths with your read-only credentials.</p>
+          </li>
+          <li>
+            <span class="step-number">03</span>
+            <h3>Verify real files</h3>
+            <p>Check SHA-256 and optionally ask the real application to open or parse each file.</p>
+          </li>
+          <li>
+            <span class="step-number">04</span>
+            <h3>File a receipt</h3>
+            <p>Cleanup happens first. Then a read-only, hash-chained JSON receipt records the result.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section configure" id="configure" aria-labelledby="configure-title">
+        <div class="config-copy">
+          <p class="kicker">Your first drill</p>
+          <h2 id="configure-title">One file. One known hash. One command.</h2>
+          <p>Start with a file you would immediately miss: a tax PDF, password-vault export, database dump, or family photo. Restore Drill never reads its contents into logs.</p>
+          <ul class="check-list">
+            <li><span aria-hidden="true">✓</span> Relative sample paths only</li>
+            <li><span aria-hidden="true">✓</span> Explicit argument arrays, no implicit shell</li>
+            <li><span aria-hidden="true">✓</span> Symlinks and path escapes refused</li>
+            <li><span aria-hidden="true">✓</span> Subprocess output excluded from receipts</li>
+          </ul>
+        </div>
+        <div class="code-sheet" aria-label="Configuration example">
+          <div class="code-head"><span>restore-drill.toml</span><button class="copy" type="button" data-copy="config-code">Copy config</button></div>
+          <pre id="config-code" tabindex="0"><code><span class="code-muted">version</span> = <span class="code-red">1</span>
+<span class="code-muted">name</span> = <span class="code-blue">"monthly essentials"</span>
+<span class="code-muted">cadence_days</span> = <span class="code-red">30</span>
+<span class="code-muted">receipt_dir</span> = <span class="code-blue">".restore-drill/receipts"</span>
+
+[restore]
+command = [<span class="code-blue">"restic"</span>, <span class="code-blue">"restore"</span>, <span class="code-blue">"latest"</span>,
+  <span class="code-blue">"--target"</span>, <span class="code-blue">"{target}"</span>, <span class="code-blue">"--include"</span>,
+  <span class="code-blue">"/Documents/tax.pdf"</span>]
+
+[[sample]]
+path = <span class="code-blue">"Documents/tax.pdf"</span>
+sha256 = <span class="code-blue">"your-known-good-sha256"</span>
+open_with = [<span class="code-blue">"pdftotext"</span>, <span class="code-blue">"{file}"</span>, <span class="code-blue">"/dev/null"</span>]</code></pre>
+          <p class="code-foot"><span>Then:</span> <code>restore-drill check &amp;&amp; restore-drill run</code></p>
+        </div>
+      </section>
+
+      <section class="section demo-section" id="demo" aria-labelledby="demo-title">
+        <div class="section-intro demo-intro">
+          <p class="kicker">Recorded local flow</p>
+          <h2 id="demo-title">Hear the alarm before it matters.</h2>
+          <p>This browser simulation uses a fixed fixture and never touches your files. Compare a healthy run with the exact failure a scheduler would receive.</p>
+        </div>
+        <div class="demo-grid">
+          <div class="demo-controls" aria-label="Simulation controls">
+            <button class="button primary" id="run-pass" type="button">Run healthy sample</button>
+            <button class="button danger-button" id="run-fail" type="button">Inject missing file</button>
+            <div class="demo-note">
+              <strong id="demo-state">Ready for a drill</strong>
+              <span id="demo-hint">Choose a fixture. No local files are accessed.</span>
+            </div>
+          </div>
+          <div class="terminal-wrap">
+            <div class="terminal-title"><span aria-hidden="true">● ● ●</span><span>restore-drill / fixture</span></div>
+            <pre class="terminal" id="terminal" tabindex="0" aria-label="Simulated command output" aria-live="polite"><span class="prompt">$</span> restore-drill run --config fixture.toml
+<span class="quiet">Waiting to run a simulated sample…</span></pre>
+          </div>
+          <article class="receipt" id="receipt" aria-live="polite" aria-labelledby="receipt-title">
+            <div class="receipt-edge" aria-hidden="true"></div>
+            <p class="receipt-label">Restore evidence / immutable JSON</p>
+            <h3 id="receipt-title">No receipt yet</h3>
+            <dl>
+              <div><dt>Drill</dt><dd>monthly essentials</dd></div>
+              <div><dt>Sample</dt><dd>Documents/tax.pdf</dd></div>
+              <div><dt>Hash</dt><dd id="receipt-hash">—</dd></div>
+              <div><dt>Cleanup</dt><dd id="receipt-cleanup">—</dd></div>
+              <div><dt>Exit</dt><dd id="receipt-exit">—</dd></div>
+            </dl>
+            <p class="stamp empty" id="stamp">Awaiting drill</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section failure" aria-labelledby="failure-title">
+        <div>
+          <p class="kicker">Quiet by default</p>
+          <h2 id="failure-title">Alert on two things only.</h2>
+        </div>
+        <div class="alert-definition">
+          <p><span class="alert-mark" aria-hidden="true">!</span><strong>Failed</strong> — the restore command, hash, or open-check did not pass.</p>
+          <p><span class="alert-mark" aria-hidden="true">⌛</span><strong>Overdue</strong> — no successful receipt exists inside your chosen cadence.</p>
+          <p class="muted">Everything else exits quietly with code 0. JSON output is built for cron, systemd timers, and your existing notifier.</p>
+        </div>
+      </section>
+
+      <section class="section faq" aria-labelledby="faq-title">
+        <p class="kicker">Operator notes</p>
+        <h2 id="faq-title">Before you put it on a timer</h2>
+        <div class="faq-grid">
+          <details>
+            <summary>Does it need my backup password?</summary>
+            <p>No. Restore Drill inherits the environment of your configured command. Keep credentials in your backup tool's existing mechanism and use read-only repository access.</p>
+          </details>
+          <details>
+            <summary>Can a local receipt prove everything?</summary>
+            <p>No. It proves what this binary observed on this host. Copy receipts to append-only external storage if a local attacker is in your threat model.</p>
+          </details>
+          <details>
+            <summary>Why not run a full restore?</summary>
+            <p>You should still rehearse full recovery. A small monthly sample catches missing, corrupt, stale, and unusable files between larger exercises.</p>
+          </details>
+          <details>
+            <summary>What happens to restored data?</summary>
+            <p>It stays in an OS-created temporary directory only for verification. Cleanup finishes before the receipt is written. Cleanup failure makes the drill fail loudly.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="closing" aria-labelledby="closing-title">
+        <p class="kicker">The next useful backup task</p>
+        <h2 id="closing-title">Prove one file today.</h2>
+        <p>Then let the receipt—not your memory—tell you when it is time again.</p>
+        <a class="button primary inverse" href="https://github.com/B-Divyesh/sf-backup-restore-drill">Get Restore Drill on GitHub</a>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand footer-brand" href="/" aria-label="Restore Drill home"><span aria-hidden="true">RD//</span> Restore Drill</a>
+      <p>Local proof for the backups you already have.</p>
+      <nav aria-label="Legal and project links">
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="https://github.com/B-Divyesh/sf-backup-restore-drill/blob/main/LICENSE">MIT license</a>
+      </nav>
+    </footer>
+    <p class="sr-only" id="copy-status" aria-live="polite"></p>
+  </body>
+</html>

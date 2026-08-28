@@ -1,0 +1,8 @@
+{
+  "prompt": "Use case: stylized-concept. Asset type: landing page hero illustration for a local backup verification CLI. Primary request: a tactile two-color risograph collage that explains a restore drill as physical evidence. Scene: an archive box at upper left feeds one file slip along a curved cobalt path into a shallow temporary work tray at center, then three checked file slips lead to a perforated evidence receipt at lower right. Style: hand-cut paper shapes, coarse halftone dots, visible ink misregistration, editorial printmaking, utilitarian and calm. Composition: landscape 3:2, isolated objects with generous warm uncoated paper negative space, clear left-to-right process, no people. Palette: warm cream paper, deep cobalt blue, persimmon red, near-black ink only. Lighting: flat printed texture, no gradients, no glossy 3D. Constraints: absolutely no words, letters, numbers, logos, watermarks, UI screenshots, padlocks, clouds, shields, computers, or generic tech imagery; receipt may use only abstract lines and check marks.",
+  "deployment": "factory-image",
+  "size": "1536x1024",
+  "quality": "high",
+  "generated": "2026-08-28",
+  "optimized_output": "site/public/restore-path.webp"
+}

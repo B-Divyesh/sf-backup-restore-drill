@@ -1,0 +1,21 @@
+{
+  "name": "backup-restore-drill",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config site/vite.config.ts",
+    "preview": "vite preview --config site/vite.config.ts --host 127.0.0.1 --port 4173",
+    "build:site": "vite build --config site/vite.config.ts",
+    "build:cli": "cargo build --release && node scripts/copy-binary.mjs",
+    "build": "npm run build:site && npm run build:cli",
+    "test": "cargo test && npm run build:site && playwright test",
+    "pack:check": "cargo package --allow-dirty"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.58.2",
+    "typescript": "5.9.2",
+    "vite": "7.3.6"
+  }
+}
