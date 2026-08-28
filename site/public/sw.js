@@ -1,5 +1,5 @@
-const CACHE = "restore-drill-shell-v1";
-const SHELL = ["/", "/privacy/", "/terms/", "/restore-path.webp"];
+const CACHE = "restore-drill-shell-v2";
+const SHELL = ["/", "/demo/", "/privacy/", "/terms/", "/restore-path.webp"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then(async (cache) => {

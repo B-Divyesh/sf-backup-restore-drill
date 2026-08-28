@@ -50,6 +50,7 @@ One 240ms “paper settle” entrance (opacity + translate only) and 160ms press
 ## Asset plan and provenance
 
 - `site/public/restore-path.webp`: original generated hero illustration, a text-free two-ink risograph collage showing an archive box, temporary work tray, checked file slips, and an evidence receipt linked by a cobalt path. Generated on 2026-08-28 with the factory image deployment via `/opt/fleet/lib/gen-image.sh`; prompt and model metadata are preserved in `.factory/restore-path.prompt.json`. Optimized locally to WebP under 300 KB. License: project-owned generated asset under the repository MIT license.
+- `site/public/restore-drill-og.jpg` and `site/public/apple-touch-icon.png`: local crops composed from the original `restore-path.webp` illustration on 2026-08-28. They add no new imagery or text and inherit its project-owned MIT provenance.
 - Registration crosses, dot fields, receipt perforations, and stamps are CSS-built product marks, not stock assets.
 
 No logos, stock icons, third-party imagery, CDN assets, generic gradients, or decorative dashboard charts are used.

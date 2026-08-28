@@ -1,0 +1,51 @@
+[
+  {
+    "id": "demo-isolation",
+    "claim": "The bundled demo uses sample data and removes its temporary workspace.",
+    "where": "/demo, README",
+    "test": "npx playwright test --grep @claim:demo-isolation",
+    "sandbox": "fresh browser page plus cargo run -- demo --json"
+  },
+  {
+    "id": "restore-verification",
+    "claim": "The demo checks the bundled restored file against its SHA-256 fingerprint.",
+    "where": "/demo",
+    "test": "npx playwright test --grep @claim:restore-verification",
+    "sandbox": "fresh /demo page; pass and missing-file states"
+  },
+  {
+    "id": "local-network",
+    "claim": "The browser demo makes no requests outside this site.",
+    "where": "landing facts, Privacy",
+    "test": "npx playwright test --grep @claim:local-network",
+    "sandbox": "fresh browser context with every request captured"
+  },
+  {
+    "id": "offline-reload",
+    "claim": "The sample demo reloads offline after the first visit.",
+    "where": "landing facts",
+    "test": "npx playwright test --grep @claim:offline-reload",
+    "sandbox": "fresh context, service worker ready, then network disabled"
+  },
+  {
+    "id": "license",
+    "claim": "Restore Drill is free and MIT licensed.",
+    "where": "landing facts, README",
+    "test": "npx playwright test --grep @claim:license",
+    "sandbox": "repository license and Cargo package metadata"
+  },
+  {
+    "id": "receipt-integrity",
+    "claim": "A later change to a hash-linked receipt is detected when the chain is checked.",
+    "where": "How it works",
+    "test": "npx playwright test --grep @claim:receipt-integrity",
+    "sandbox": "temporary receipt chain followed by deliberate receipt replacement"
+  },
+  {
+    "id": "path-safety",
+    "claim": "Restore Drill rejects links and paths outside the temporary restore folder.",
+    "where": "Setup",
+    "test": "npx playwright test --grep @claim:path-safety",
+    "sandbox": "unsafe and missing-placeholder configuration passed to real validation"
+  }
+]

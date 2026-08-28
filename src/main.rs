@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 use restore_drill::{EXAMPLE_CONFIG, load_config, load_receipts, run_drill, status};
 use serde_json::json;
-use std::fs::OpenOptions;
+use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::PathBuf;
 
@@ -29,10 +29,15 @@ enum Commands {
         #[arg(short, long, default_value = "restore-drill.toml")]
         config: PathBuf,
     },
-    /// Restore samples, verify them, clean up, and write an immutable receipt
+    /// Restore samples, verify them, clean up, and write a hash-linked receipt
     Run {
         #[arg(short, long, default_value = "restore-drill.toml")]
         config: PathBuf,
+        #[arg(long)]
+        json: bool,
+    },
+    /// Run bundled sample data in a disposable workspace; never reads your backup
+    Demo {
         #[arg(long)]
         json: bool,
     },
@@ -127,6 +132,7 @@ fn execute(cli: Cli) -> Result<i32, String> {
             }
             Ok(if outcome.passed { 0 } else { 1 })
         }
+        Commands::Demo { json: as_json } => run_demo(as_json),
         Commands::Status {
             config,
             json: as_json,
@@ -194,4 +200,65 @@ fn execute(cli: Cli) -> Result<i32, String> {
             Ok(0)
         }
     }
+}
+
+fn run_demo(as_json: bool) -> Result<i32, String> {
+    let workspace = tempfile::Builder::new()
+        .prefix("restore-drill-demo-")
+        .tempdir()
+        .map_err(|error| format!("could not create demo workspace: {error}"))?;
+    let source = workspace.path().join("bundled-sample.txt");
+    fs::write(
+        &source,
+        include_bytes!("../examples/Documents/quarterly-tax-notes.txt"),
+    )
+    .map_err(|error| format!("could not prepare bundled sample: {error}"))?;
+    let receipt_dir = workspace.path().join("receipts");
+    let expected = "296d92c10e066d18272f88d8c389b315671eb72d318a55de2b0146403f6bfe48";
+    let config_path = workspace.path().join("demo.toml");
+    let config = format!(
+        r#"version = 1
+name = "bundled quarterly tax notes"
+cadence_days = 30
+receipt_dir = "{}"
+timeout_seconds = 5
+
+[restore]
+command = ["sh", "-c", "mkdir -p \"$1/Documents\"; cp \"$2\" \"$1/Documents/quarterly-tax-notes.txt\"", "restore-drill-demo", "{{target}}", "{}"]
+
+[[sample]]
+path = "Documents/quarterly-tax-notes.txt"
+sha256 = "{}"
+open_with = ["test", "-s", "{{file}}"]
+"#,
+        receipt_dir.display(),
+        source.display(),
+        expected
+    );
+    fs::write(&config_path, config)
+        .map_err(|error| format!("could not write demo configuration: {error}"))?;
+    let (config, hash) = load_config(&config_path)?;
+    let outcome = run_drill(&config, &hash)?;
+    let receipt_count = load_receipts(&receipt_dir)?.len();
+    if as_json {
+        println!(
+            "{}",
+            serde_json::to_string(&json!({
+                "status": if outcome.passed { "pass" } else { "fail" },
+                "sample": "Documents/quarterly-tax-notes.txt",
+                "receipt_count": receipt_count,
+                "workspace": "removed"
+            }))
+            .map_err(|error| error.to_string())?
+        );
+    } else {
+        println!("PASS  bundled sample restored and verified");
+        println!("Receipt  hash-linked JSON written inside the disposable workspace");
+        println!("Cleanup  temporary restore folder removed; demo workspace will now be removed");
+    }
+    let passed = outcome.passed;
+    workspace
+        .close()
+        .map_err(|error| format!("could not remove demo workspace: {error}"))?;
+    Ok(if passed { 0 } else { 1 })
 }

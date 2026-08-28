@@ -1,0 +1,4 @@
+Quarterly tax records — sample only
+
+This bundled file is used by `restore-drill demo`.
+It contains no customer, account, or backup data.

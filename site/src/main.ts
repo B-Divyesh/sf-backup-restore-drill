@@ -4,11 +4,15 @@ const offline = document.querySelector<HTMLElement>("#offline");
 const setNetworkState = () => {
   if (offline) offline.hidden = navigator.onLine;
 };
+setNetworkState();
 window.addEventListener("online", setNetworkState);
 window.addEventListener("offline", setNetworkState);
-setNetworkState();
 
-if ("serviceWorker" in navigator && import.meta.env.PROD) {
+if (location.pathname === "/" && new URLSearchParams(location.search).get("demo") === "1") {
+  location.replace("/demo/?demo=1");
+}
+
+if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => undefined));
 }
 
@@ -20,15 +24,38 @@ document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((button) => 
     if (!source) return;
     try {
       await navigator.clipboard.writeText(plainText(source));
-      button.textContent = "Copied";
+      button.textContent = "Copied configuration";
       if (status) status.textContent = "Configuration copied to clipboard.";
     } catch {
-      button.textContent = "Select code";
+      button.textContent = "Select configuration";
       window.getSelection()?.selectAllChildren(source);
       if (status) status.textContent = "Clipboard was unavailable. The configuration is selected for copying.";
     }
-    window.setTimeout(() => { button.textContent = "Copy config"; }, 1800);
+    window.setTimeout(() => { button.textContent = "Copy configuration"; }, 1800);
   });
+});
+
+const routeStatus = document.querySelector<HTMLElement>("#route-status");
+document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
+  link.addEventListener("click", (event) => {
+    const target = document.querySelector<HTMLElement>(link.getAttribute("href") ?? "");
+    if (!target) return;
+    event.preventDefault();
+    history.pushState(null, "", link.getAttribute("href"));
+    const heading = target.matches("h1, h2, h3") ? target : target.querySelector<HTMLElement>("h1, h2, h3");
+    target.scrollIntoView();
+    (heading ?? target).tabIndex = -1;
+    (heading ?? target).focus({ preventScroll: true });
+    if (routeStatus) routeStatus.textContent = heading?.textContent?.trim() ?? target.textContent?.trim() ?? "Section changed";
+  });
+});
+
+window.addEventListener("popstate", () => {
+  const heading = document.querySelector<HTMLElement>("main h1");
+  if (!heading) return;
+  heading.tabIndex = -1;
+  heading.focus({ preventScroll: true });
+  if (routeStatus) routeStatus.textContent = heading.textContent?.trim() ?? "Page changed";
 });
 
 type DemoKind = "pass" | "fail";
@@ -42,60 +69,50 @@ const exit = document.querySelector<HTMLElement>("#receipt-exit");
 const stamp = document.querySelector<HTMLElement>("#stamp");
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let runId = 0;
-
 const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, reduced ? 0 : ms));
 const setTerminal = (lines: string[]) => {
-  if (terminal) terminal.innerHTML = `<span class="prompt">$</span> restore-drill run --config fixture.toml\n${lines.join("\n")}`;
+  if (terminal) terminal.innerHTML = `<span class="prompt">$</span> restore-drill demo\n${lines.join("\n")}`;
 };
 
 async function runDemo(kind: DemoKind) {
+  if (!terminal) return;
   const currentRun = ++runId;
-  document.querySelectorAll<HTMLButtonElement>("#demo button").forEach((button) => { button.disabled = true; });
-  if (state) state.textContent = "Drill running";
-  if (hint) hint.textContent = "A fresh temporary target has been created.";
+  document.querySelectorAll<HTMLButtonElement>(".demo-controls button").forEach((button) => { button.disabled = true; });
+  if (state) state.textContent = "Sample restore running";
+  if (hint) hint.textContent = "The command created a new temporary restore folder.";
   if (title) title.textContent = "Receipt pending";
-  if (hash) hash.textContent = "calculating…";
+  if (hash) hash.textContent = "checking…";
   if (cleanup) cleanup.textContent = "pending";
   if (exit) exit.textContent = "—";
   if (stamp) { stamp.textContent = "Checking"; stamp.className = "stamp empty"; }
-  const lines = ["<span class=\"running\">CREATE</span>  temporary target /tmp/restore-drill-••••••"];
+  const lines = ["<span class=\"running\">RESTORE</span> Documents/quarterly-tax-notes.txt"];
   setTerminal(lines);
-  await wait(460);
+  await wait(220);
   if (currentRun !== runId) return;
-  lines.push("<span class=\"running\">RESTORE</span> Documents/tax.pdf");
-  setTerminal(lines);
-  await wait(520);
-  if (currentRun !== runId) return;
-
   if (kind === "fail") {
-    lines.push("<span class=\"fail-text\">MISSING</span> Documents/tax.pdf");
-    lines.push("<span class=\"pass-text\">CLEAN</span>   temporary target removed");
-    lines.push("<span class=\"fail-text\">FAIL</span>    sample was not restored  [exit 1]");
+    lines.push("<span class=\"fail-text\">MISSING</span> Documents/quarterly-tax-notes.txt", "<span class=\"pass-text\">CLEAN</span>   temporary restore folder removed", "<span class=\"fail-text\">FAIL</span>    sample was not restored  [exit 1]");
     setTerminal(lines);
-    if (state) state.textContent = "Failure caught loudly";
-    if (hint) hint.textContent = "Next: confirm the backup includes this path, then rerun.";
-    if (title) title.textContent = "Recovery not proven";
+    if (state) state.textContent = "Missing file detected";
+    if (hint) hint.textContent = "Confirm the backup includes this path, then run the drill again.";
+    if (title) title.textContent = "Recovery not verified";
     if (hash) hash.textContent = "not available";
     if (cleanup) cleanup.textContent = "complete";
     if (exit) exit.textContent = "1 / failed";
     if (stamp) { stamp.textContent = "Failed"; stamp.className = "stamp failed"; }
   } else {
-    lines.push("<span class=\"pass-text\">HASH</span>    sha256 8b51…a02f matched");
-    await wait(360);
-    lines.push("<span class=\"pass-text\">OPEN</span>    pdftotext accepted file");
-    lines.push("<span class=\"pass-text\">CLEAN</span>   temporary target removed");
-    lines.push("<span class=\"pass-text\">PASS</span>    receipt chain advanced  [exit 0]");
+    lines.push("<span class=\"pass-text\">HASH</span>    SHA-256 fingerprint matched", "<span class=\"pass-text\">OPEN</span>    file check passed", "<span class=\"pass-text\">CLEAN</span>   temporary restore folder removed", "<span class=\"pass-text\">PASS</span>    hash-linked receipt written  [exit 0]");
     setTerminal(lines);
-    if (state) state.textContent = "Recovery proven";
-    if (hint) hint.textContent = "Next drill is due in 30 days. No alert needed.";
+    if (state) state.textContent = "Sample restored and verified";
+    if (hint) hint.textContent = "The temporary restore folder was removed before the receipt was written.";
     if (title) title.textContent = "All checks passed";
-    if (hash) hash.textContent = "8b51…a02f / match";
+    if (hash) hash.textContent = "296d…fe48 / match";
     if (cleanup) cleanup.textContent = "complete";
     if (exit) exit.textContent = "0 / passed";
     if (stamp) { stamp.textContent = "Verified"; stamp.className = "stamp passed"; }
   }
-  document.querySelectorAll<HTMLButtonElement>("#demo button").forEach((button) => { button.disabled = false; });
+  document.querySelectorAll<HTMLButtonElement>(".demo-controls button").forEach((button) => { button.disabled = false; });
 }
 
 document.querySelector("#run-pass")?.addEventListener("click", () => runDemo("pass"));
 document.querySelector("#run-fail")?.addEventListener("click", () => runDemo("fail"));
+document.querySelector("#reset-demo")?.addEventListener("click", () => runDemo("pass"));

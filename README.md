@@ -1,23 +1,31 @@
 # Restore Drill
 
-Restore Drill is a local, backup-tool-agnostic CLI for people who already have scripted backups but want repeatable evidence that selected files can be restored. It restores into a newly created temporary directory, checks presence and SHA-256 hashes, optionally asks the file's real application to open or validate it, removes the temporary directory, and writes a tamper-evident receipt.
+Restore Drill is a command-line tool for people who already run scripted backups. It checks that selected files still restore.
 
-It does not move backups, store repository credentials, inspect file contents, or provide disaster-recovery orchestration.
+It restores into a new temporary folder and compares SHA-256 fingerprints. It can run an application check. It removes the folder and writes a hash-linked receipt.
+
+## Try the bundled demo
+
+Run the real restore path with shipped sample data:
+
+```sh
+cargo run -- demo
+```
+
+The command creates and removes a disposable workspace. It does not read your configuration, backups, or receipt directory. The browser version is at [the sample demo](https://backup-restore-drill.sociobot.in/demo/).
 
 ## Install
 
-Download a release binary when releases are available, or build from source:
+Build from source with Rust 1.85 or later:
 
 ```sh
 cargo install --path .
 restore-drill --help
 ```
 
-Rust 1.85+ is required to build. The compiled CLI has no runtime dependencies.
+The built program has no product network client or runtime package dependency.
 
-## Usage
-
-Create a starter file and edit its explicit argument arrays for your backup tool:
+## Use your backup command
 
 ```sh
 restore-drill init --config restore-drill.toml
@@ -27,7 +35,7 @@ restore-drill status --config restore-drill.toml
 restore-drill receipts --config restore-drill.toml
 ```
 
-Use `--json` on `run`, `status`, or `receipts` for schedulers. Commands never invoke a shell. `{target}` is replaced only with the temporary directory Restore Drill created; `{file}` in an open-check is replaced with the restored sample's absolute path.
+`run`, `status`, and `receipts` support `--json` for scheduler and alert-tool input. Commands receive direct argument arrays. Restore commands contain `{target}` once. Application checks contain `{file}` once.
 
 ```toml
 version = 1
@@ -45,56 +53,29 @@ sha256 = "replace-with-known-good-lowercase-sha256"
 open_with = ["pdftotext", "{file}", "/dev/null"]
 ```
 
-The restore command must contain `{target}` exactly once. Sample paths must be relative and cannot contain `..`. Restore Drill refuses symlinks and any resolved file outside its temporary target. It deletes that target after every result, including failures.
-
-Exit codes are stable:
+Sample paths must be relative. Restore Drill rejects links and resolved files outside its temporary folder. It does not copy backup-command output into receipts.
 
 | Code | Meaning |
 | ---: | --- |
-| 0 | Command completed; drill passed or status is current |
-| 1 | A restore or verification failed |
-| 2 | Invalid configuration or operational error |
-| 3 | Last successful drill is overdue |
-| 4 | No successful receipt exists yet |
+| 0 | The drill passed or status is current. |
+| 1 | A restore or check failed. |
+| 2 | Configuration or an operational step failed. |
+| 3 | The last successful drill is overdue. |
+| 4 | No successful receipt exists. |
 
-Receipts are individual read-only JSON files linked by SHA-256. `restore-drill receipts` verifies the complete chain before displaying it. Copy or sync the receipt directory to append-only storage if host-level immutability is required.
+Receipts are read-only JSON files linked by SHA-256. `restore-drill receipts` detects a later change to a receipt or broken chain. Copy receipts to storage that prevents changes when that risk matters.
 
-## Scheduler examples
-
-Run daily and alert only when the drill itself fails:
-
-```cron
-17 4 * * * /usr/local/bin/restore-drill run --config /etc/restore-drill.toml --json || /usr/local/bin/notify-admin "Restore drill failed"
-```
-
-Or perform drills separately and alert only when overdue:
-
-```cron
-20 8 * * * /usr/local/bin/restore-drill status --config /etc/restore-drill.toml --json || /usr/local/bin/notify-admin "Restore drill needs attention"
-```
-
-## Develop and verify
+## Develop, test, and deploy
 
 ```sh
-npm install
+npm ci
 npm test
 npm run build
-npm run build:site
 cargo package --allow-dirty
 ```
 
-`npm run build` creates release binaries in `dist/bin/` and the deployable documentation site in `dist/site/`. The static site can be developed with `npm run dev`.
+`npm run build` creates `dist/bin/restore-drill` and `dist/site/`. Deploy `dist/site/` as a static site with the included `staticwebapp.config.json` response policy. Run each command in `.factory/claims.json` from a clean checkout before release.
 
-The deployable site includes `staticwebapp.config.json`, which is the Azure Static Web Apps response-policy contract: it sends the restrictive CSP, permissions and referrer policies, caches only hashed assets and the immutable hero for a year, and keeps `sw.js` revalidating. Verify that contract after a production deployment with:
+## Privacy and license
 
-```sh
-npm run test:response-policy
-curl -sSI https://backup-restore-drill.sociobot.in/
-curl -sSI https://backup-restore-drill.sociobot.in/sw.js
-```
-
-## Privacy and security
-
-Everything runs locally. There is no telemetry, account, cloud API, or credential storage. Restore subprocess output is deliberately not copied into receipts because tools sometimes echo repository locations or sensitive arguments. Prefer a read-only repository credential scoped outside this config file.
-
-See [SECURITY.md](SECURITY.md) for the threat model. This software is MIT licensed; see [LICENSE](LICENSE).
+The website has no forms, analytics, cookies, tracking pixels, or third-party scripts. See [Privacy](https://backup-restore-drill.sociobot.in/privacy/) and [Terms](https://backup-restore-drill.sociobot.in/terms/). Restore Drill is free and [MIT licensed](LICENSE).
