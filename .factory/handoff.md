@@ -1,7 +1,7 @@
 # Restore Drill — polish 1 handoff
 
 **Work order:** `backup-restore-drill-polish-1`  
-**Repair commits:** `6e5069239637627730ff10fedfd3b45cbb01953b`, `9ab305f`  
+**Repair commits:** `6e5069239637627730ff10fedfd3b45cbb01953b`, `9ab305f`, `3fe26a8`  
 **Deployment:** `https://backup-restore-drill.sociobot.in/` redeployed with `/opt/fleet/lib/deploy-static.sh backup-restore-drill dist/site` on 2026-08-28 UTC.
 
 ## Delivered
@@ -24,7 +24,7 @@ cargo clippy --all-targets -- -D warnings  PASS
 cargo package --allow-dirty                 PASS (51 files, 579.5 KiB unpacked)
 ```
 
-Every command listed in `.factory/claims.json` passed individually. This includes demo isolation, restore verification, same-origin browser traffic, offline reload, MIT license, receipt tamper detection, and path safety.
+Every command listed in `.factory/claims.json` passed individually from clean clone `/tmp/restore-drill-clean.69SrKX` after `npm ci`; its final Playwright run reports `{"status":"passed","failedTests":[]}`. This includes demo isolation, restore verification, same-origin browser traffic, offline reload, MIT license, receipt tamper detection, and path safety.
 
 Live cold verification passed at 390×844:
 

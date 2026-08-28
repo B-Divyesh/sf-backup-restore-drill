@@ -1,6 +1,6 @@
 # Polish 1 — review finding closure
 
-**Repair commits:** `6e5069239637627730ff10fedfd3b45cbb01953b`, `9ab305f`
+**Repair commits:** `6e5069239637627730ff10fedfd3b45cbb01953b`, `9ab305f`, `3fe26a8`
 **Live URL checked cold:** `https://backup-restore-drill.sociobot.in/` on 2026-08-28 UTC
 
 | Finding | Change made | Evidence |
@@ -15,5 +15,6 @@
 | MINOR 8 | Renamed the external source destination to **View source on GitHub (external)**. | live footer and link crawl in browser route test. |
 | Copy audit findings | Rewrote the landing and README in plain words, normalized terms, removed “five-minute,” “fixture,” and mock-recording language, and audited all landing copy. | `.factory/copy-audit.md`; 390px screenshot. |
 | Earlier response-policy/cache finding | Retained and rechecked production CSP, permissions, referrer, content-type, and cache controls after redeploy. | `npm run test:response-policy`; live `curl -sSI /` headers. |
+| Clean-clone claim operation | Updated Playwright’s local server to build before each individual claim command. | Fresh clone `/tmp/restore-drill-clean.69SrKX`; all seven `.factory/claims.json` commands passed. |
 
 No review finding remains open.
