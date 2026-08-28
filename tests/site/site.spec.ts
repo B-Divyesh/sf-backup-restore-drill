@@ -33,10 +33,13 @@ test("demo exposes both pass and actionable failure states", async ({ page }) =>
 
 test("offline state tells the reader what remains available", async ({ page, context }) => {
   await page.goto("/");
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  await page.reload();
   await context.setOffline(true);
-  await page.evaluate(() => window.dispatchEvent(new Event("offline")));
+  await page.reload();
   await expect(page.locator("#offline")).toBeVisible();
   await expect(page.locator("#offline")).toContainText("Reconnect");
+  await expect(page.locator("h1")).toContainText("Recovery proven");
 });
 
 for (const path of ["/privacy/", "/terms/"]) {

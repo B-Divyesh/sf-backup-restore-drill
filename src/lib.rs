@@ -667,6 +667,7 @@ mod tests {
         let outcome = run_drill(&cfg, "config-hash").unwrap();
         assert!(!outcome.passed);
         assert!(outcome.receipt.body.samples[0].message.contains("missing"));
+        assert_eq!(status(&cfg).unwrap().status, "failed");
         let mut receipt: serde_json::Value =
             serde_json::from_slice(&fs::read(&outcome.receipt_path).unwrap()).unwrap();
         receipt["status"] = serde_json::Value::String("pass".into());
