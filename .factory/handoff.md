@@ -1,53 +1,36 @@
-# Restore Drill — polish 1 handoff
+# Restore Drill — adversarial review 2 handoff
 
-**Work order:** `backup-restore-drill-polish-1`  
-**Repair commits:** `6e5069239637627730ff10fedfd3b45cbb01953b`, `9ab305f`, `3fe26a8`  
-**Deployment:** `https://backup-restore-drill.sociobot.in/` redeployed with `/opt/fleet/lib/deploy-static.sh backup-restore-drill dist/site` on 2026-08-28 UTC.
+**Work order:** `backup-restore-drill-review-2`
+**Candidate:** `93ea4c9153b8ac362c9846780989f454e15585cd`
+**Verdict:** **FAIL**
 
-## Delivered
+## Done
 
-- A real bundled CLI demo: `restore-drill demo` runs the normal restore, SHA-256, application-check, cleanup, and receipt path inside a temporary workspace, then removes it.
-- A direct browser demo at `/demo/` and `?demo=1`, with completed sample output, the required isolated-demo banner, reset, and start-for-real controls.
-- Plain first-screen copy, a full claim registry, tagged observable claim tests, mobile navigation, consistent legal/footer links, metadata, product-derived share art, and real 404 behavior.
-- The risograph evidence-desk identity remains intact. The new share image and apple icon are crops of the existing project-owned illustration; provenance is recorded in `.factory/design.md`.
+- Reviewed the live site cold at 390×844 and 1366×900.
+- Audited landing and README copy, demo behavior, browser/CLI isolation, live offline behavior, request traffic, claims, prior findings, routes, links, metadata, accessibility, and visual identity.
+- Recorded the full evidence and 24 findings in `.factory/review-2.md` without modifying product code.
 
-## Verification evidence
-
-From a clean dependency install:
+## Verification
 
 ```text
-npm ci                                      PASS (23 packages, 0 vulnerabilities)
-npm test                                    PASS (5 Rust tests, 20 Playwright tests)
-npm run build                               PASS (dist/site and dist/bin/restore-drill)
-cargo fmt --check                           PASS
-cargo clippy --all-targets -- -D warnings  PASS
-cargo package --allow-dirty                 PASS (51 files, 579.5 KiB unpacked)
+npm ci                         PASS
+npm run build                  PASS (dist/site and dist/bin/restore-drill)
+npm test                       PASS (5 Rust tests, response policy, 20 Playwright tests)
+7 claims.json commands         PASS individually from a clean clone
+Live Axe, 390px + desktop      0 serious/critical violations
+Live link crawl                no dead destination
+Live offline demo reload       PASS
+Browser demo storage/requests  empty storage; same-origin requests only
+CLI demo in temp directory     PASS; marker unchanged; demo workspace removed
 ```
 
-Every command listed in `.factory/claims.json` passed individually from clean clone `/tmp/restore-drill-clean.69SrKX` after `npm ci`; its final Playwright run reports `{"status":"passed","failedTests":[]}`. This includes demo isolation, restore verification, same-origin browser traffic, offline reload, MIT license, receipt tamper detection, and path safety.
+Clean claim clone: `/tmp/restore-drill-review-2.QEbqAl/repo`. CLI sandbox: `/tmp/restore-drill-cli-review-2.E62B39`.
 
-Live cold verification passed at 390×844:
+## Blocking gaps
 
-- `/`, `/demo/`, `/privacy/`, and `/terms/` have their required titles, one `h1`, and zero Axe serious/critical findings.
-- `/does-not-exist-review-1` returns HTTP 404 with `Page not found — Restore Drill`.
-- `/demo/` reloads offline after service-worker setup and shows its offline notice and persistent demo banner.
-- Mobile overflow was `0`; normal route loads produced no console/page errors.
-- Production headers include CSP, Permissions-Policy, Referrer-Policy, X-Content-Type-Options, and HTML revalidation caching.
+- The one-click phone demo hides its sample output and receipt below the first viewport and has no recording of the real CLI.
+- The claim registry remains incomplete; the SHA-256 claim test only reads static browser text.
+- Landing copy says the configured backup command restores only selected paths, which the CLI does not enforce.
+- Direct/cross-page hashes and Back restore visual position without moving focus or announcing the section.
 
-Screenshots: `.factory/evidence/polish-1-home-390.png`, `.factory/evidence/polish-1-demo-390.png`, and `.factory/evidence/polish-1-live-demo-390.png`.
-
-## Run and publish
-
-```sh
-npm ci
-npm test
-npm run build
-cargo run -- demo
-cargo package --allow-dirty
-```
-
-Publish the ready crate with `cargo publish` from a credentialed release environment; this work order did not publish it.
-
-## Known gaps
-
-None. The static site and CLI are buildable and deployed. The `navigationFallback` was intentionally removed because this is a real multi-page static site; keeping it made unknown paths return the home page instead of the required HTTP 404.
+See `.factory/review-2.md` for exact quotes, all copy counts, unlisted claims, prior-finding verification, and concrete fixes.
