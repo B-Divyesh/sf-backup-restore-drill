@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">Restore Drill demo terminal recording</title>
+  <desc id="desc">A captured terminal run that reports a bundled sample passed and its temporary restore folder was removed.</desc>
+  <rect width="960" height="420" fill="#101512"/>
+  <rect width="960" height="54" fill="#303834"/>
+  <circle cx="34" cy="27" r="8" fill="#d17a66"/><circle cx="60" cy="27" r="8" fill="#d2a653"/><circle cx="86" cy="27" r="8" fill="#73d397"/>
+  <text x="132" y="34" fill="#b8c2b8" font-family="ui-monospace, monospace" font-size="18">restore-drill demo — captured command output</text>
+  <g font-family="ui-monospace, monospace" font-size="18">
+    <text x="42" y="108" fill="#73d397">$</text><text x="70" y="108" fill="#f5f0df">restore-drill demo</text>
+    <text x="42" y="164" fill="#73d397">PASS</text><text x="104" y="164" fill="#f5f0df">  Documents/quarterly-tax-notes.txt restored and verified</text>
+    <text x="42" y="220" fill="#72aefa">Receipt</text><text x="122" y="220" fill="#f5f0df">  hash-linked JSON written inside the temporary restore folder</text>
+    <text x="42" y="276" fill="#73d397">Cleanup</text><text x="122" y="276" fill="#f5f0df">  temporary restore folder and demo files removed before exit</text>
+  </g>
+</svg>

@@ -203,7 +203,7 @@ pub fn run_drill(config: &Config, config_hash: &str) -> DrillResult<RunOutcome> 
     let temp = Builder::new()
         .prefix("restore-drill-")
         .tempdir()
-        .map_err(|e| format!("could not create temporary restore target: {e}"))?;
+        .map_err(|e| format!("could not create temporary restore folder: {e}"))?;
     let target = temp.path().to_path_buf();
     let command = substitute(
         &config.restore.command,
@@ -246,7 +246,7 @@ pub fn run_drill(config: &Config, config_hash: &str) -> DrillResult<RunOutcome> 
     if let Err(error) = temp.close() {
         passed = false;
         remediation = Some(format!(
-            "temporary restore target could not be removed: {error}. Remove it manually and inspect local permissions."
+            "temporary restore folder could not be removed: {error}. Remove it manually and inspect local permissions."
         ));
     }
 

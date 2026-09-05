@@ -1,51 +1,100 @@
 [
   {
     "id": "demo-isolation",
-    "claim": "The bundled demo uses sample data and removes its temporary workspace.",
+    "claim": "The bundled demo reads shipped sample data and leaves unrelated working-directory files unchanged.",
     "where": "/demo, README",
     "test": "npx playwright test --grep @claim:demo-isolation",
-    "sandbox": "fresh browser page plus cargo run -- demo --json"
+    "sandbox": "temporary working directory containing configuration, backup, and receipt traps"
   },
   {
     "id": "restore-verification",
-    "claim": "The demo checks the bundled restored file against its SHA-256 fingerprint.",
-    "where": "/demo",
+    "claim": "Selected files pass only when their restored bytes match the saved SHA-256 fingerprint and the file exists.",
+    "where": "landing, README",
     "test": "npx playwright test --grep @claim:restore-verification",
-    "sandbox": "fresh /demo page; pass and missing-file states"
+    "sandbox": "real CLI with passing, mismatched, and missing restored files"
   },
   {
-    "id": "local-network",
-    "claim": "The browser demo makes no requests outside this site.",
-    "where": "landing facts, Privacy",
-    "test": "npx playwright test --grep @claim:local-network",
-    "sandbox": "fresh browser context with every request captured"
+    "id": "configured-command",
+    "claim": "Restore Drill runs the restore command arguments configured by the operator.",
+    "where": "landing",
+    "test": "npx playwright test --grep @claim:configured-command",
+    "sandbox": "argument-recording restore stub receives the temporary restore folder and literal configured argument"
+  },
+  {
+    "id": "temporary-folder-lifecycle",
+    "claim": "Restore Drill removes its temporary restore folder before it writes a receipt, including failed checks.",
+    "where": "landing, README",
+    "test": "npx playwright test --grep @claim:temporary-folder-lifecycle",
+    "sandbox": "real CLI pass, restore failure, missing file, hash mismatch, application failure, and timeout cases"
+  },
+  {
+    "id": "application-check",
+    "claim": "A failed application check makes the drill fail.",
+    "where": "landing, README",
+    "test": "npx playwright test --grep @claim:application-check",
+    "sandbox": "real CLI with passing and exit-7 application checks"
+  },
+  {
+    "id": "path-safety",
+    "claim": "Restore Drill rejects unsafe configuration and restored links outside its temporary restore folder.",
+    "where": "landing, README",
+    "test": "npx playwright test --grep @claim:path-safety",
+    "sandbox": "invalid command configuration plus a real restore command that creates an outside link"
+  },
+  {
+    "id": "receipt-integrity",
+    "claim": "Receipts are read-only JSON files linked by SHA-256, and changed receipts are detected.",
+    "where": "landing, README",
+    "test": "npx playwright test --grep @claim:receipt-integrity",
+    "sandbox": "two real CLI receipts followed by a deliberate replacement"
+  },
+  {
+    "id": "receipt-redaction",
+    "claim": "Receipts do not copy backup-command output or restored file contents.",
+    "where": "README",
+    "test": "npx playwright test --grep @claim:receipt-redaction",
+    "sandbox": "real restore command emits a unique private value to stdout, stderr, and the restored file"
+  },
+  {
+    "id": "json-and-exit-codes",
+    "claim": "Run, status, and receipts provide JSON output and use the documented result codes.",
+    "where": "README",
+    "test": "npx playwright test --grep @claim:json-and-exit-codes",
+    "sandbox": "real CLI current, failed, overdue, never-run, and invalid-configuration cases"
+  },
+  {
+    "id": "browser-privacy",
+    "claim": "The website has no forms, analytics, cookies, tracking pixels, or third-party requests.",
+    "where": "landing, Privacy, README",
+    "test": "npx playwright test --grep @claim:browser-privacy",
+    "sandbox": "fresh browser demo with request capture, storage inspection, and reset"
   },
   {
     "id": "offline-reload",
     "claim": "The sample demo reloads offline after the first visit.",
-    "where": "landing facts",
+    "where": "landing",
     "test": "npx playwright test --grep @claim:offline-reload",
-    "sandbox": "fresh context, service worker ready, then network disabled"
+    "sandbox": "fresh browser context visits the demo, then reloads after network is disabled"
   },
   {
     "id": "license",
     "claim": "Restore Drill is free and MIT licensed.",
-    "where": "landing facts, README",
+    "where": "landing, README, Terms",
     "test": "npx playwright test --grep @claim:license",
     "sandbox": "repository license and Cargo package metadata"
   },
   {
-    "id": "receipt-integrity",
-    "claim": "A later change to a hash-linked receipt is detected when the chain is checked.",
-    "where": "How it works",
-    "test": "npx playwright test --grep @claim:receipt-integrity",
-    "sandbox": "temporary receipt chain followed by deliberate receipt replacement"
+    "id": "build-artifacts",
+    "claim": "npm run build creates dist/bin/restore-drill and dist/site/.",
+    "where": "README",
+    "test": "npx playwright test --grep @claim:build-artifacts",
+    "sandbox": "documented build command followed by artifact inspection"
   },
   {
-    "id": "path-safety",
-    "claim": "Restore Drill rejects links and paths outside the temporary restore folder.",
-    "where": "Setup",
-    "test": "npx playwright test --grep @claim:path-safety",
-    "sandbox": "unsafe and missing-placeholder configuration passed to real validation"
+    "id": "response-policy",
+    "claim": "The built site includes the documented security-header and cache settings.",
+    "where": "README",
+    "test": "npx playwright test --grep @claim:response-policy",
+    "sandbox": "built staticwebapp.config.json validated against the documented headers and cache rules"
   }
 ]

@@ -36,27 +36,51 @@ document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((button) => 
 });
 
 const routeStatus = document.querySelector<HTMLElement>("#route-status");
+
+function headingFor(target: HTMLElement) {
+  return target.matches("h1, h2, h3") ? target : target.querySelector<HTMLElement>("h1, h2, h3");
+}
+
+function focusDestination(target: HTMLElement, scroll: boolean) {
+  const heading = headingFor(target) ?? target;
+  if (scroll) target.scrollIntoView();
+  heading.tabIndex = -1;
+  heading.focus({ preventScroll: true });
+  if (routeStatus) routeStatus.textContent = heading.textContent?.trim() ?? "Section changed";
+}
+
+function focusHashDestination(scroll = false) {
+  if (location.hash) {
+    try {
+      const target = document.querySelector<HTMLElement>(location.hash);
+      if (target) {
+        focusDestination(target, scroll);
+        return;
+      }
+    } catch {
+      // A malformed fragment should leave the document usable at its heading.
+    }
+  }
+  const heading = document.querySelector<HTMLElement>("main h1");
+  if (heading) focusDestination(heading, false);
+}
+
 document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
   link.addEventListener("click", (event) => {
     const target = document.querySelector<HTMLElement>(link.getAttribute("href") ?? "");
     if (!target) return;
     event.preventDefault();
     history.pushState(null, "", link.getAttribute("href"));
-    const heading = target.matches("h1, h2, h3") ? target : target.querySelector<HTMLElement>("h1, h2, h3");
-    target.scrollIntoView();
-    (heading ?? target).tabIndex = -1;
-    (heading ?? target).focus({ preventScroll: true });
-    if (routeStatus) routeStatus.textContent = heading?.textContent?.trim() ?? target.textContent?.trim() ?? "Section changed";
+    focusDestination(target, true);
   });
 });
 
-window.addEventListener("popstate", () => {
-  const heading = document.querySelector<HTMLElement>("main h1");
-  if (!heading) return;
-  heading.tabIndex = -1;
-  heading.focus({ preventScroll: true });
-  if (routeStatus) routeStatus.textContent = heading.textContent?.trim() ?? "Page changed";
+window.addEventListener("popstate", () => focusHashDestination(true));
+window.addEventListener("hashchange", () => focusHashDestination(true));
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) focusHashDestination(false);
 });
+window.requestAnimationFrame(() => focusHashDestination(false));
 
 type DemoKind = "pass" | "fail";
 const terminal = document.querySelector<HTMLElement>("#terminal");

@@ -36,7 +36,7 @@ enum Commands {
         #[arg(long)]
         json: bool,
     },
-    /// Run bundled sample data in a disposable workspace; never reads your backup
+    /// Run bundled sample data in a temporary restore folder; never reads your backup
     Demo {
         #[arg(long)]
         json: bool,
@@ -252,9 +252,9 @@ open_with = ["test", "-s", "{{file}}"]
             .map_err(|error| error.to_string())?
         );
     } else {
-        println!("PASS  bundled sample restored and verified");
-        println!("Receipt  hash-linked JSON written inside the disposable workspace");
-        println!("Cleanup  temporary restore folder removed; demo workspace will now be removed");
+        println!("PASS  Documents/quarterly-tax-notes.txt restored and verified");
+        println!("Receipt  hash-linked JSON written inside the temporary restore folder");
+        println!("Cleanup  temporary restore folder and demo files removed before exit");
     }
     let passed = outcome.passed;
     workspace
